@@ -37,18 +37,18 @@ static PyObject *do_attach(const char *name)
 
 	/* Open the shm block */
 	if ((fd = shm_open(name, O_RDWR, 0)) < 0)
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Read the meta data structure */
 	if (read(fd, &meta, sizeof (meta)) != sizeof (meta)) {
 		close(fd);
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 	}
 
 	/* Check the meta data */
 	if (strncmp(meta.magic, SHARED_ARRAY_MAGIC, sizeof (meta.magic))) {
 		close(fd);
-		PyErr_SetString(PyExc_RuntimeError,
+		PyErr_SetString(PyExc_IOError,
 				"No SharedArray at this address");
 		return NULL;
 	}
@@ -56,7 +56,7 @@ static PyObject *do_attach(const char *name)
 	/* Check the number of dimensions */
 	if (meta.ndims > SHARED_ARRAY_NDIMS_MAX) {
 		close(fd);
-		PyErr_SetString(PyExc_RuntimeError,
+		PyErr_SetString(PyExc_ValueError,
 				"Too many dimensions, recompile SharedArray!");
 		return NULL;
 	}
@@ -65,7 +65,7 @@ static PyObject *do_attach(const char *name)
 	data = mmap(NULL, meta.size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	close(fd);
 	if (data == MAP_FAILED)
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Summon Leon */
 	leon = PyObject_MALLOC(sizeof (*leon));

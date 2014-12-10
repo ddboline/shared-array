@@ -39,7 +39,7 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 
 	/* Internal limitation */
 	if (ndims > SHARED_ARRAY_NDIMS_MAX) {
-		PyErr_SetString(PyExc_RuntimeError,
+		PyErr_SetString(PyExc_ValueError,
 				"Too many dimensions, recompile SharedArray!");
 		return NULL;
 	}
@@ -52,17 +52,17 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 
 	/* Create the shm block */
 	if ((fd = shm_open(name, O_RDWR | O_CREAT | O_EXCL, 0666)) < 0)
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Set the block size */
 	if (ftruncate(fd, size) < 0)
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Map it */
 	data = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	close(fd);
 	if (data == MAP_FAILED)
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Build the meta-data structure in memory */
 	meta = (struct array_meta *) data;

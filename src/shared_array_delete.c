@@ -29,30 +29,35 @@ static PyObject *do_delete(const char *name)
 {
 	struct array_meta meta;
 	int fd;
+	int size;
 
 	/* Open the shm block */
 	if ((fd = shm_open(name, O_RDWR, 0)) < 0)
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
+		return PyErr_SetFromErrnoWithFilename(PyExc_RuntimeError, name);
 
 	/* Read the meta data structure */
-	if (read(fd, &meta, sizeof (meta)) != sizeof (meta)) {
-		close(fd);
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
-	}
-
-	/* Close the shm block */
+	size = read(fd, &meta, sizeof (meta));
 	close(fd);
+
+	/* Catch read errors */
+	if (size <= 0)
+		return PyErr_SetFromErrnoWithFilename(PyExc_RuntimeError, name);
+
+	/* Catch short reads */
+	if (size != sizeof (meta)) {
+		PyErr_SetString(PyExc_IOError, "No SharedArray at this address");
+		return NULL;
+	}
 
 	/* Check the meta data */
 	if (strncmp(meta.magic, SHARED_ARRAY_MAGIC, sizeof (meta.magic))) {
-		PyErr_SetString(PyExc_RuntimeError,
-				"No SharedArray at this address");
+		PyErr_SetString(PyExc_IOError, "No SharedArray at this address");
 		return NULL;
 	}
 
 	/* Unlink the shm block */
 	if (shm_unlink(name) < 0)
-		return PyErr_SetFromErrno(PyExc_RuntimeError);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	Py_RETURN_NONE;
 }
