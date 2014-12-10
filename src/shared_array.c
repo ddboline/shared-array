@@ -25,6 +25,8 @@
 static PyMethodDef module_functions[] = {
 	{ "create", (PyCFunction) shared_array_create,
 	  METH_VARARGS | METH_KEYWORDS, "Create a numpy array in shared memory" },
+	{ "attach", (PyCFunction) shared_array_attach,
+	  METH_VARARGS, "Attach a numpy array from shared memory" },
 	{ NULL, NULL, 0, NULL }
 };
 

@@ -66,6 +66,8 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 	/* Build the meta-data structure in memory */
 	meta = (struct array_meta *) data;
 	strncpy(meta->magic, SHARED_ARRAY_MAGIC, sizeof (meta->magic));
+	meta->size = size - sizeof (*meta);
+	meta->typenum = dtype->type_num;
 	meta->ndims = ndims;
 	for (i = 0; i < ndims; i++)
 		meta->dims[i] = dims[i];
@@ -88,7 +90,7 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 }
 
 /*
- * Method: SharedArray.CreateArray()
+ * Method: SharedArray.create()
  */
 PyObject *shared_array_create(PyObject *self, PyObject *args, PyObject *kwds)
 {

@@ -25,12 +25,15 @@
 
 /* Array metadata */
 struct array_meta {
-	char magic[16];
-	uint32_t ndims;
-	uint32_t dims[SHARED_ARRAY_NDIMS_MAX];
+	char	magic[16];
+	size_t	size;
+	int	typenum;
+	int	ndims;
+	npy_intp dims[SHARED_ARRAY_NDIMS_MAX];
 } __attribute__ ((packed));
 
 /* Module functions */
 extern PyObject *shared_array_create(PyObject *self, PyObject *args, PyObject *kw);
+extern PyObject *shared_array_attach(PyObject *self, PyObject *args);
 
 #endif /* !__SHARED_ARRAY_H__ */
