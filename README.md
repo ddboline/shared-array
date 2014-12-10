@@ -5,8 +5,26 @@ This is a simple python extension that lets you share numpy arrays
 with other processes on the same computer.  It uses posix shared
 memory internally and therefore should work on most operating systems.
 
-Usage
------
+Example
+-------
+
+	import numpy as np
+	import SharedArray as sa
+	
+	a = sa.create("test1", 10)
+	b = sa.attach("test1")
+	
+	a[0] = 42
+	print(b[0])
+	
+	del a
+	print(b[0])
+	
+	sa.delete("test1")
+	print(b[0])
+
+Functions
+---------
 
 ### `SharedArray.create(name, shape, dtype=float)`
 
@@ -48,12 +66,12 @@ Installation
 ------------
 
 The extension uses the `distutils` python package that should be
-familiar to most python users.
+familiar to most python users. To test the extension directly from the
+source tree, without installing, type:
 
-* To test the extension directly from the source tree, without
-installing, type `python setup.py build_ext --inplace`.  You can then
-start python or ipython from the same directory and `import
-SharedArray`.
+	python setup.py build_ext --inplace
 
-* To build and install the extension, type `python setup.py build`
-followed by `sudo python setup.py install`.
+To build and install the extension system-wide, type:
+
+	python setup.py build
+	sudo python setup.py install
