@@ -1,16 +1,20 @@
 #!/usr/bin/env python
-##
-##      Project: SharedArray
-## 
-##         File: setup.py
-## 
-##  Description: Setup script
-## 
-##     Author/s: Mathieu Mirmont <mat@parad0x.org>
-## 
-##   Created on: 08/12/2014
-## 
-##
+#
+# This file is part of SharedArray.
+# Copyright (C) 2014 Mathieu Mirmont <mat@parad0x.org>
+#
+# SharedArray is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# SharedArray is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with SharedArray.  If not, see <http://www.gnu.org/licenses/>.
 
 from distutils.core import setup, Extension
 from glob import glob
