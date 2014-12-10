@@ -35,5 +35,6 @@ struct array_meta {
 /* Module functions */
 extern PyObject *shared_array_create(PyObject *self, PyObject *args, PyObject *kw);
 extern PyObject *shared_array_attach(PyObject *self, PyObject *args);
+extern PyObject *shared_array_delete(PyObject *self, PyObject *args);
 
 #endif /* !__SHARED_ARRAY_H__ */
