@@ -48,14 +48,16 @@ static PyObject *do_attach(const char *name)
 	/* Check the meta data */
 	if (strncmp(meta.magic, SHARED_ARRAY_MAGIC, sizeof (meta.magic))) {
 		close(fd);
-		PyErr_SetString(PyExc_RuntimeError, "No SharedArray at this address");
+		PyErr_SetString(PyExc_RuntimeError,
+				"No SharedArray at this address");
 		return NULL;
 	}
 
 	/* Check the number of dimensions */
 	if (meta.ndims > SHARED_ARRAY_NDIMS_MAX) {
 		close(fd);
-		PyErr_SetString(PyExc_RuntimeError, "Too many dimensions, recompile SharedArray!");
+		PyErr_SetString(PyExc_RuntimeError,
+				"Too many dimensions, recompile SharedArray!");
 		return NULL;
 	}
 	
@@ -72,7 +74,8 @@ static PyObject *do_attach(const char *name)
 	leon->size = meta.size;
 
 	/* Create the array object */
-	ret = PyArray_SimpleNewFromData(meta.ndims, meta.dims, meta.typenum, data + sizeof (meta));
+	ret = PyArray_SimpleNewFromData(meta.ndims, meta.dims, meta.typenum,
+					data + sizeof (meta));
 
 	/* Attach Leon to the array */
 	PyArray_SetBaseObject((PyArrayObject *) ret, (PyObject *) leon);

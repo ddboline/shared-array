@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 ##
 ##      Project: SharedArray
 ## 
@@ -14,5 +14,16 @@
 
 from distutils.core import setup, Extension
 from glob import glob
+import os
 
-setup(ext_modules = [ Extension("SharedArray", glob("src/*.c")) ])
+setup(name         = 'SharedArray',
+      description  = 'Share numpy arrays between processes',
+      author       = 'Mathieu Mirmont',
+      author_email = 'mat@parad0x.org',
+      url          = 'http://parad0x.org/git/python/shared-array/',
+      version      = '0.0',
+      license      = "GPL 2",
+      platforms    = "POSIX",
+      ext_modules = [ Extension('SharedArray',
+                                glob(os.path.join('src', '*.c')),
+                                libraries = [ 'rt' ]) ])

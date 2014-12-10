@@ -39,7 +39,8 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 
 	/* Internal limitation */
 	if (ndims > SHARED_ARRAY_NDIMS_MAX) {
-		PyErr_SetString(PyExc_RuntimeError, "Too many dimensions, recompile SharedArray!");
+		PyErr_SetString(PyExc_RuntimeError,
+				"Too many dimensions, recompile SharedArray!");
 		return NULL;
 	}
 

@@ -45,7 +45,8 @@ static PyObject *do_delete(const char *name)
 
 	/* Check the meta data */
 	if (strncmp(meta.magic, SHARED_ARRAY_MAGIC, sizeof (meta.magic))) {
-		PyErr_SetString(PyExc_RuntimeError, "No SharedArray at this address");
+		PyErr_SetString(PyExc_RuntimeError,
+				"No SharedArray at this address");
 		return NULL;
 	}
 
