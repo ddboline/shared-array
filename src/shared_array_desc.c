@@ -16,23 +16,34 @@
  * along with SharedArray.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SHARED_ARRAY_LEON_H__
-#define __SHARED_ARRAY_LEON_H__
+#if PY_MAJOR_VERSION >= 3
+
+#define NPY_NO_DEPRECATED_API	NPY_1_8_API_VERSION
+#include <Python.h>
 
 /*
- * Object definition
+ * List of fields
  */
-typedef struct {
-	PyObject_HEAD
-
-	/* Address and size of the mapped memory region */
-	void *data;
-	size_t size;
-} PyLeonObject;
+static PyStructSequence_Field fields[] = {
+	{ "name",	"Array name"	},
+	{ "dtype",	"Data type"	},
+	{ "dims",	"Dimensions"	},
+	{ NULL, NULL }
+};
 
 /*
- * Object type
+ * Struct sequence description
  */
-extern PyTypeObject PyLeonObject_Type;
+PyStructSequence_Desc PyArrayDescObject_Desc = {
+	"ArrayDesc",
+	"Description of an attachable numpy shared array",
+	fields,
+	3,
+};
 
-#endif /* !__SHARED_ARRAY_LEON_H__ */
+/*
+ * Type definition
+ */
+PyTypeObject PyArrayDescObject_Type;
+
+#endif

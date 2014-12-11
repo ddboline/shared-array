@@ -49,7 +49,14 @@ from the current process.  To delete a shared array use the
 
 This function destroys an array previously created in shared memory
 and identified by `name`.  After calling `delete`, the array will not
-be attachable anymore, but currents attachments will not be affected.
+be attachable anymore, but existing attachments will remain valid
+until they are themselves destroyed.
+
+### `SharedArray.list()`
+
+This function returns a list of previously created shared arrays,
+their name, data type and dimensions.  At the moment this function
+only works on Linux and requires Python 3.
 
 Requirements
 ------------

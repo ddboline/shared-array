@@ -37,9 +37,27 @@ struct array_meta {
 	npy_intp dims[SHARED_ARRAY_NDIMS_MAX];
 } __attribute__ ((packed));
 
+/* ArrayDesc object */
+#if PY_MAJOR_VERSION >= 3
+extern PyStructSequence_Desc PyArrayDescObject_Desc;
+extern PyTypeObject PyArrayDescObject_Type;
+#endif
+
+/* Leon object */
+typedef struct {
+	PyObject_HEAD
+	void	*data;
+	size_t	size;
+} PyLeonObject;
+
+extern PyTypeObject PyLeonObject_Type;
+
 /* Module functions */
 extern PyObject *shared_array_create(PyObject *self, PyObject *args, PyObject *kw);
 extern PyObject *shared_array_attach(PyObject *self, PyObject *args);
 extern PyObject *shared_array_delete(PyObject *self, PyObject *args);
+#if PY_MAJOR_VERSION >= 3
+extern PyObject *shared_array_list(PyObject *self, PyObject *args);
+#endif
 
 #endif /* !__SHARED_ARRAY_H__ */

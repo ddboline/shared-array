@@ -17,9 +17,12 @@
  */
 
 #define NPY_NO_DEPRECATED_API	NPY_1_8_API_VERSION
+#define PY_ARRAY_UNIQUE_SYMBOL	SHARED_ARRAY_ARRAY_API
+#define NO_IMPORT_ARRAY
+
 #include <Python.h>
 #include <sys/mman.h>
-#include "shared_array_leon.h"
+#include "shared_array.h"
 
 /*
  * Deallocation function

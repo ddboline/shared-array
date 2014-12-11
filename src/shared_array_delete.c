@@ -38,7 +38,7 @@ static PyObject *do_delete(const char *name)
 
 	/* Open the shm block */
 	if ((fd = shm_open(name, O_RDWR, 0)) < 0)
-		return PyErr_SetFromErrnoWithFilename(PyExc_RuntimeError, name);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Read the meta data structure */
 	size = read(fd, &meta, sizeof (meta));
@@ -46,7 +46,7 @@ static PyObject *do_delete(const char *name)
 
 	/* Catch read errors */
 	if (size <= 0)
-		return PyErr_SetFromErrnoWithFilename(PyExc_RuntimeError, name);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Catch short reads */
 	if (size != sizeof (meta)) {

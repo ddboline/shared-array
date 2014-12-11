@@ -22,7 +22,6 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include "shared_array.h"
-#include "shared_array_leon.h"
 
 /* Module name */
 static const char module_name[] = "SharedArray";
@@ -47,6 +46,12 @@ static PyMethodDef module_functions[] = {
 	{ "delete", (PyCFunction) shared_array_delete,
 	  METH_VARARGS,
 	  "Delete an existing numpy array from shared memory" },
+
+#if PY_MAJOR_VERSION >= 3
+	{ "list", (PyCFunction) shared_array_list,
+	  METH_VARARGS,
+	  "List all existing numpy arrays from shared memory" },
+#endif
 
 	{ NULL, NULL, 0, NULL }
 };
@@ -96,6 +101,13 @@ static PyObject *module_init(void)
 	Py_INCREF(&PyLeonObject_Type);
 	PyModule_AddObject(m, module_name, (PyObject *) &PyLeonObject_Type);
 
+#if PY_MAJOR_VERSION >= 3
+	/* Register the Descr type */
+	PyStructSequence_InitType(&PyArrayDescObject_Type, &PyArrayDescObject_Desc);
+	PyType_Ready(&PyArrayDescObject_Type);
+	Py_INCREF(&PyArrayDescObject_Type);
+	PyModule_AddObject(m, module_name, (PyObject *) &PyArrayDescObject_Type);
+#endif	
 	return m;
 }
 

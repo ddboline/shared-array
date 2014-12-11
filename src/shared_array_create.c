@@ -27,7 +27,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "shared_array.h"
-#include "shared_array_leon.h"
 
 /*
  * Create a numpy array in shared memory
