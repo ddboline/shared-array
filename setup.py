@@ -5,7 +5,7 @@
 #
 # SharedArray is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #
 # SharedArray is distributed in the hope that it will be useful,
@@ -18,16 +18,40 @@
 
 from distutils.core import setup, Extension
 from glob import glob
-import os
+from os import path
 
-setup(name         = 'SharedArray',
-      description  = 'Share numpy arrays between processes',
+here = path.abspath(path.dirname(__file__))
+
+with open(path.join(here, 'README.md')) as f:
+    long_description = f.read()
+
+setup(name    = 'SharedArray',
+      version = '0.0',
+
+      # Description
+      description      = 'Share numpy arrays between processes',
+      long_description = long_description,
+
+      # Contact
       author       = 'Mathieu Mirmont',
       author_email = 'mat@parad0x.org',
-      url          = 'http://parad0x.org/git/python/shared-array/',
-      version      = '0.0',
-      license      = "GPL 2",
-      platforms    = "POSIX",
-      ext_modules = [ Extension('SharedArray',
-                                glob(os.path.join('src', '*.c')),
-                                libraries = [ 'rt' ]) ])
+      url          = 'http://parad0x.org/git/python/shared-array/about',
+
+      # License
+      license   = 'GPL 2',
+      platforms = 'POSIX',
+
+      # Extras for pip
+      keywords  = 'numpy array shared memory shm',
+      classifiers  = [
+          'Development Status :: 3 - Alpha',
+          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 3',
+      ],
+
+      # Compilation
+      ext_modules  = [
+          Extension('SharedArray',
+                    glob(path.join(here, 'src', '*.c')),
+                    libraries = [ 'rt' ])
+      ])
