@@ -16,10 +16,10 @@
  * along with SharedArray.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if PY_MAJOR_VERSION >= 3
-
 #define NPY_NO_DEPRECATED_API	NPY_1_8_API_VERSION
 #include <Python.h>
+
+#if PY_MAJOR_VERSION >= 3
 
 /*
  * List of fields

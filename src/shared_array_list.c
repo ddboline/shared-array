@@ -16,13 +16,14 @@
  * along with SharedArray.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if PY_MAJOR_VERSION >= 3
-
 #define NPY_NO_DEPRECATED_API	NPY_1_8_API_VERSION
 #define PY_ARRAY_UNIQUE_SYMBOL	SHARED_ARRAY_ARRAY_API
 #define NO_IMPORT_ARRAY
 
 #include <Python.h>
+
+#if PY_MAJOR_VERSION >= 3
+
 #include <numpy/arrayobject.h>
 #include <sys/types.h>
 #include <sys/stat.h>
