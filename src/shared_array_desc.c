@@ -18,8 +18,7 @@
 
 #define NPY_NO_DEPRECATED_API	NPY_1_8_API_VERSION
 #include <Python.h>
-
-#if PY_MAJOR_VERSION >= 3
+#include <structseq.h>
 
 /*
  * List of fields
@@ -45,5 +44,3 @@ PyStructSequence_Desc PyArrayDescObject_Desc = {
  * Type definition
  */
 PyTypeObject PyArrayDescObject_Type;
-
-#endif

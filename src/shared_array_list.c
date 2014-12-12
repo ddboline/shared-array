@@ -21,9 +21,7 @@
 #define NO_IMPORT_ARRAY
 
 #include <Python.h>
-
-#if PY_MAJOR_VERSION >= 3
-
+#include <structseq.h>
 #include <numpy/arrayobject.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -89,7 +87,7 @@ static PyObject *convert_dims(int ndims, npy_intp *dims)
 	int i;
 
 	for (i = 0; i < ndims; i++)
-		PyTuple_SetItem(tuple, i, PyLong_FromLong(dims[i]));
+		PyTuple_SET_ITEM(tuple, i, PyLong_FromLong(dims[i]));
 	return tuple;
 }
 
@@ -110,9 +108,9 @@ static struct list *list_extend(struct list *next, struct array_meta *meta, cons
 	list->next = next;
 	list->desc = PyStructSequence_New(&PyArrayDescObject_Type);
 
-	PyStructSequence_SetItem(list->desc, 0, PyBytes_FromString(name));
-	PyStructSequence_SetItem(list->desc, 1, PyArray_TypeObjectFromType(meta->typenum));
-	PyStructSequence_SetItem(list->desc, 2, convert_dims(meta->ndims, meta->dims));
+	PyStructSequence_SET_ITEM(list->desc, 0, PyBytes_FromString(name));
+	PyStructSequence_SET_ITEM(list->desc, 1, PyArray_TypeObjectFromType(meta->typenum));
+	PyStructSequence_SET_ITEM(list->desc, 2, convert_dims(meta->ndims, meta->dims));
 
 	/* Return the new element */
 	return list;
@@ -208,5 +206,3 @@ PyObject *shared_array_list(PyObject *self, PyObject *args)
 	/* Return the tuple */
 	return tuple;
 }
-
-#endif

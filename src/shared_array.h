@@ -20,6 +20,7 @@
 #define __SHARED_ARRAY_H__
 
 #include <Python.h>
+#include <structseq.h>
 #include <numpy/arrayobject.h>
 
 /* Magic header */
@@ -38,10 +39,8 @@ struct array_meta {
 } __attribute__ ((packed));
 
 /* ArrayDesc object */
-#if PY_MAJOR_VERSION >= 3
 extern PyStructSequence_Desc PyArrayDescObject_Desc;
 extern PyTypeObject PyArrayDescObject_Type;
-#endif
 
 /* Leon object */
 typedef struct {
@@ -56,8 +55,6 @@ extern PyTypeObject PyLeonObject_Type;
 extern PyObject *shared_array_create(PyObject *self, PyObject *args, PyObject *kw);
 extern PyObject *shared_array_attach(PyObject *self, PyObject *args);
 extern PyObject *shared_array_delete(PyObject *self, PyObject *args);
-#if PY_MAJOR_VERSION >= 3
 extern PyObject *shared_array_list(PyObject *self, PyObject *args);
-#endif
 
 #endif /* !__SHARED_ARRAY_H__ */
