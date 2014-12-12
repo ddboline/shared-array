@@ -19,9 +19,8 @@ interpreters.
 	# Create an array in shared memory
 	a = sa.create("test1", 10)
 
-	# Attach it as a different array. Note that this could have
-	# done from another python interpreter as long as it runs
-	# on the same computer.
+	# Attach it as a different array. This can be done from another
+	# python interpreter as long as it runs on the same computer.
 	b = sa.attach("test1")
 
 	# See how they are actually sharing the same memory block
@@ -32,15 +31,15 @@ interpreters.
 	del a
 	print(b[0])
 
-	# See how "test1" is still present in shared memory even
-	# though we destroyed the array a.
+	# See how "test1" is still present in shared memory even though we
+	# destroyed the array a.
 	sa.list()
 
 	# Now destroy the array "test1" from memory.
 	sa.delete("test1")
 
-	# The array b is not affected, but once you destroy it
-	# then the data are lost.
+	# The array b is not affected, but once you destroy it then the
+	# data are lost.
 	print(b[0])
 
 Functions
