@@ -26,7 +26,7 @@ with open(path.join(here, 'README.md')) as f:
     long_description = f.read()
 
 setup(name    = 'SharedArray',
-      version = '0.0',
+      version = '0.1',
 
       # Description
       description      = 'Share numpy arrays between processes',
@@ -38,15 +38,19 @@ setup(name    = 'SharedArray',
       url          = 'http://parad0x.org/git/python/shared-array/about',
 
       # License
-      license   = 'GPL 2',
-      platforms = 'POSIX',
+      license   = 'https://www.gnu.org/licenses/gpl-2.0.html',
 
       # Extras for pip
       keywords  = 'numpy array shared memory shm',
       classifiers  = [
           'Development Status :: 3 - Alpha',
-          'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 3',
+          'Intended Audience :: Developers',
+          'Intended Audience :: Science/Research',
+          'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+          'Operating System :: POSIX',
+          'Operating System :: Unix',
+          'Programming Language :: C',
+          'Topic :: Scientific/Engineering'
       ],
 
       # Compilation
