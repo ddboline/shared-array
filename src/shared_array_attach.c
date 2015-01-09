@@ -36,6 +36,7 @@ static PyObject *do_attach(const char *name)
 	struct array_meta meta;
 	void *data;
 	int fd;
+	size_t map_size;
 	PyObject *ret;
 	PyLeonObject *leon;
 
@@ -64,9 +65,12 @@ static PyObject *do_attach(const char *name)
 				"Too many dimensions, recompile SharedArray!");
 		return NULL;
 	}
-	
+
+	/* Calculate the size of the mmap'd area */
+	map_size = meta.size + sizeof (meta);
+
 	/* Map the array data */
-	data = mmap(NULL, meta.size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	data = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	close(fd);
 	if (data == MAP_FAILED)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
@@ -75,7 +79,7 @@ static PyObject *do_attach(const char *name)
 	leon = PyObject_MALLOC(sizeof (*leon));
 	PyObject_INIT((PyObject *) leon, &PyLeonObject_Type);
 	leon->data = data;
-	leon->size = meta.size;
+	leon->size = map_size;
 
 	/* Create the array object */
 	ret = PyArray_SimpleNewFromData(meta.ndims, meta.dims, meta.typenum,

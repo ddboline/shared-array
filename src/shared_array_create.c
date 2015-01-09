@@ -36,34 +36,39 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 	struct array_meta *meta;
 	void *data;
 	size_t size;
+	size_t map_size;
 	int i;
 	int fd;
 	PyObject *ret;
 	PyLeonObject *leon;
 
-	/* Internal limitation */
+	/* Check the number of dimensions */
 	if (ndims > SHARED_ARRAY_NDIMS_MAX) {
 		PyErr_SetString(PyExc_ValueError,
 				"Too many dimensions, recompile SharedArray!");
 		return NULL;
 	}
 
-	/* Calculate the size of the memory to allocate */
+	/* Calculate the memory size of the array */
 	size = dtype->elsize;
 	for (i = 0; i < ndims; i++)
 		size *= dims[i];
-	size += sizeof (*meta);
+
+	/* Calculate the size of the mmap'd area */
+	map_size = size + sizeof (*meta);
 
 	/* Create the shm block */
 	if ((fd = shm_open(name, O_RDWR | O_CREAT | O_EXCL, 0666)) < 0)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Set the block size */
-	if (ftruncate(fd, size) < 0)
+	if (ftruncate(fd, map_size) < 0) {
+		close(fd);
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
+	}
 
 	/* Map it */
-	data = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	data = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	close(fd);
 	if (data == MAP_FAILED)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
@@ -71,23 +76,21 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 	/* Build the meta-data structure in memory */
 	meta = (struct array_meta *) data;
 	strncpy(meta->magic, SHARED_ARRAY_MAGIC, sizeof (meta->magic));
-	meta->size = size - sizeof (*meta);
+	meta->size = size;
 	meta->typenum = dtype->type_num;
 	meta->ndims = ndims;
 	for (i = 0; i < ndims; i++)
 		meta->dims[i] = dims[i];
 
-	/* Summon Leon */
+	/* Summon Leon to cleanup later */
 	leon = PyObject_MALLOC(sizeof (*leon));
 	PyObject_INIT((PyObject *) leon, &PyLeonObject_Type);
 	leon->data = data;
-	leon->size = size;
-
-	/* Skip the meta-data and point to the raw data */
-	data += sizeof (*meta);
+	leon->size = map_size;
 
 	/* Create the array object */
-	ret = PyArray_SimpleNewFromData(ndims, dims, dtype->type_num, data);
+	ret = PyArray_SimpleNewFromData(ndims, dims, dtype->type_num,
+					data + sizeof (*meta));
 
 	/* Attach Leon to the array */
 	PyArray_SetBaseObject((PyArrayObject *) ret, (PyObject *) leon);
