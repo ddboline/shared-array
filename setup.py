@@ -19,6 +19,7 @@
 from distutils.core import setup, Extension
 from glob import glob
 from os import path
+import numpy
 
 here = path.abspath(path.dirname(__file__))
 
@@ -57,5 +58,6 @@ setup(name    = 'SharedArray',
       ext_modules  = [
           Extension('SharedArray',
                     glob(path.join(here, 'src', '*.c')),
-                    libraries = [ 'rt' ])
+                    libraries = [ 'rt' ],
+                    include_dirs=[numpy.get_include()])
       ])
