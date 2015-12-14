@@ -89,6 +89,25 @@ SharedArray uses the posix shm interface (`shm_open` and `shm_unlink`)
 and so should work on most operating systems that follow the posix
 standards (Linux, *BSD, etc.).
 
+FAQ
+---
+
+### On Linux, I get segfaults when working with very large arrays.
+
+A few people have reported segfaults with very large arrays. To my
+great relief I eventually found out that this is not a bug in
+SharedArray but rather an indication that the system ran out of POSIX
+shared memory. On Linux a `tmpfs` virtual filesystem is used to
+provide POSIX shared memory, and by default it is given only about 20%
+of the total available memory. That amount can be changed by
+re-mounting the `tmpfs` filesystem with the `size` option:
+
+	sudo mount -o remount,size=100% /run/shm
+
+Also you can make the change permanent, on next boot, by setting
+`SHM_SIZE=100%` in `/etc/defaults/tmpfs` on recent Debian/Devuan
+installations.
+
 Installation
 ------------
 
