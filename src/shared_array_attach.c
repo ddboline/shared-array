@@ -34,15 +34,21 @@
 static PyObject *do_attach(const char *name)
 {
 	struct array_meta meta;
-	void *data;
 	int fd;
 	size_t map_size;
+	void *map_addr;
 	PyObject *ret;
 	PyLeonObject *leon;
 
 	/* Open the shm block */
 	if ((fd = shm_open(name, O_RDWR, 0)) < 0)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
+
+	/* Seek to the meta data location */
+	if (lseek(fd, -sizeof (meta), SEEK_END) < 0) {
+		close(fd);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
+	}
 
 	/* Read the meta data structure */
 	if (read(fd, &meta, sizeof (meta)) != sizeof (meta)) {
@@ -53,16 +59,14 @@ static PyObject *do_attach(const char *name)
 	/* Check the meta data */
 	if (strncmp(meta.magic, SHARED_ARRAY_MAGIC, sizeof (meta.magic))) {
 		close(fd);
-		PyErr_SetString(PyExc_IOError,
-				"No SharedArray at this address");
+		PyErr_SetString(PyExc_IOError, "No SharedArray at this address");
 		return NULL;
 	}
 
 	/* Check the number of dimensions */
 	if (meta.ndims > SHARED_ARRAY_NDIMS_MAX) {
 		close(fd);
-		PyErr_SetString(PyExc_ValueError,
-				"Too many dimensions, recompile SharedArray!");
+		PyErr_SetString(PyExc_ValueError, "Too many dimensions, recompile SharedArray!");
 		return NULL;
 	}
 
@@ -70,20 +74,19 @@ static PyObject *do_attach(const char *name)
 	map_size = meta.size + sizeof (meta);
 
 	/* Map the array data */
-	data = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	map_addr = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	close(fd);
-	if (data == MAP_FAILED)
+	if (map_addr == MAP_FAILED)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Summon Leon */
 	leon = PyObject_MALLOC(sizeof (*leon));
 	PyObject_INIT((PyObject *) leon, &PyLeonObject_Type);
-	leon->data = data;
+	leon->data = map_addr;
 	leon->size = map_size;
 
 	/* Create the array object */
-	ret = PyArray_SimpleNewFromData(meta.ndims, meta.dims, meta.typenum,
-					data + sizeof (meta));
+	ret = PyArray_SimpleNewFromData(meta.ndims, meta.dims, meta.typenum, map_addr);
 
 	/* Attach Leon to the array */
 	PyArray_SetBaseObject((PyArrayObject *) ret, (PyObject *) leon);

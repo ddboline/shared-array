@@ -61,6 +61,12 @@ static int get_meta(const struct dirent *dirent, struct array_meta *meta)
 	if ((fd = open(path, O_RDONLY, 0666)) < 0)
 		return -1;
 
+	/* Seek to the meta data location */
+	if (lseek(fd, -sizeof (*meta), SEEK_END) < 0) {
+		close(fd);
+		return -1;
+	}
+
 	/* Read the meta data structure */
 	if (read(fd, meta, sizeof (*meta)) != sizeof (*meta)) {
 		close(fd);

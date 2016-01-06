@@ -34,9 +34,9 @@
 static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_Descr *dtype)
 {
 	struct array_meta *meta;
-	void *data;
 	size_t size;
 	size_t map_size;
+	void *map_addr;
 	int i;
 	int fd;
 	PyObject *ret;
@@ -44,8 +44,7 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 
 	/* Check the number of dimensions */
 	if (ndims > SHARED_ARRAY_NDIMS_MAX) {
-		PyErr_SetString(PyExc_ValueError,
-				"Too many dimensions, recompile SharedArray!");
+		PyErr_SetString(PyExc_ValueError, "Too many dimensions, recompile SharedArray!");
 		return NULL;
 	}
 
@@ -61,20 +60,20 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 	if ((fd = shm_open(name, O_RDWR | O_CREAT | O_EXCL, 0666)) < 0)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
-	/* Set the block size */
+	/* Grow the file */
 	if (ftruncate(fd, map_size) < 0) {
 		close(fd);
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 	}
 
 	/* Map it */
-	data = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	map_addr = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	close(fd);
-	if (data == MAP_FAILED)
+	if (map_addr == MAP_FAILED)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
-	/* Build the meta-data structure in memory */
-	meta = (struct array_meta *) data;
+	/* Append meta-data to the array in memory */
+	meta = (struct array_meta *) (map_addr + size);
 	strncpy(meta->magic, SHARED_ARRAY_MAGIC, sizeof (meta->magic));
 	meta->size = size;
 	meta->typenum = dtype->type_num;
@@ -85,12 +84,11 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 	/* Summon Leon to cleanup later */
 	leon = PyObject_MALLOC(sizeof (*leon));
 	PyObject_INIT((PyObject *) leon, &PyLeonObject_Type);
-	leon->data = data;
+	leon->data = map_addr;
 	leon->size = map_size;
 
 	/* Create the array object */
-	ret = PyArray_SimpleNewFromData(ndims, dims, dtype->type_num,
-					data + sizeof (*meta));
+	ret = PyArray_SimpleNewFromData(ndims, dims, dtype->type_num, map_addr);
 
 	/* Attach Leon to the array */
 	PyArray_SetBaseObject((PyArrayObject *) ret, (PyObject *) leon);

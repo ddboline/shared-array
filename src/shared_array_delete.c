@@ -40,6 +40,12 @@ static PyObject *do_delete(const char *name)
 	if ((fd = shm_open(name, O_RDWR, 0)) < 0)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
+	/* Seek to the meta data location */
+	if (lseek(fd, -sizeof (meta), SEEK_END) < 0) {
+		close(fd);
+		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
+	}
+
 	/* Read the meta data structure */
 	size = read(fd, &meta, sizeof (meta));
 	close(fd);
