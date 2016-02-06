@@ -108,6 +108,14 @@ Also you can make the change permanent, on next boot, by setting
 `SHM_SIZE=100%` in `/etc/defaults/tmpfs` on recent Debian/Devuan
 installations.
 
+### I can't attach old (pre 0.4) arrays anymore.
+
+Since version 0.4 all arrays are now page aligned in memory, to be
+used with SIMD instructions (e.g. fftw library). As a side effect,
+arrays created with a previous version of SharedArray aren't
+compatible with the new version (the location of the metadata
+changed). Save your work before upgrading.
+
 Installation
 ------------
 
