@@ -89,7 +89,7 @@ static PyObject *module_init(void)
 	PyObject *m;
 
 	/* Import numpy arrays */
-	import_array();
+	import_array1(NULL);
 
 	/* Register the module */
 	if (!(m = CREATE_MODULE(module_name, module_functions, module_docstring)))
