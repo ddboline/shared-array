@@ -27,7 +27,7 @@ with open(path.join(here, 'README.md')) as f:
     long_description = f.read()
 
 setup(name    = 'SharedArray',
-      version = '0.4',
+      version = '0.5',
 
       # Description
       description      = 'Share numpy arrays between processes',
