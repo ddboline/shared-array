@@ -19,6 +19,10 @@
 #ifndef __SHARED_ARRAY_H__
 #define __SHARED_ARRAY_H__
 
+#define NPY_NO_DEPRECATED_API	NPY_1_8_API_VERSION
+#define PY_ARRAY_UNIQUE_SYMBOL	SHARED_ARRAY_ARRAY_API
+#define NO_IMPORT_ARRAY
+
 #include <Python.h>
 #include <structseq.h>
 #include <numpy/arrayobject.h>
@@ -56,5 +60,9 @@ extern PyObject *shared_array_create(PyObject *self, PyObject *args, PyObject *k
 extern PyObject *shared_array_attach(PyObject *self, PyObject *args);
 extern PyObject *shared_array_delete(PyObject *self, PyObject *args);
 extern PyObject *shared_array_list(PyObject *self, PyObject *args);
+
+/* Support functions */
+extern int open_file(const char *name, int flags, mode_t mode);
+extern int unlink_file(const char *name);
 
 #endif /* !__SHARED_ARRAY_H__ */

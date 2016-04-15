@@ -56,8 +56,8 @@ static PyObject *do_create(const char *name, int ndims, npy_intp *dims, PyArray_
 	/* Calculate the size of the mmap'd area */
 	map_size = size + sizeof (*meta);
 
-	/* Create the shm block */
-	if ((fd = shm_open(name, O_RDWR | O_CREAT | O_EXCL, 0666)) < 0)
+	/* Create the file */
+	if ((fd = open_file(name, O_RDWR | O_CREAT | O_EXCL, 0666)) < 0)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Grow the file */

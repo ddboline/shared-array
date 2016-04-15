@@ -40,8 +40,8 @@ static PyObject *do_attach(const char *name)
 	PyObject *ret;
 	PyLeonObject *leon;
 
-	/* Open the shm block */
-	if ((fd = shm_open(name, O_RDWR, 0)) < 0)
+	/* Open the file */
+	if ((fd = open_file(name, O_RDWR, 0)) < 0)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Seek to the meta data location */

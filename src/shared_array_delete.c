@@ -36,8 +36,8 @@ static PyObject *do_delete(const char *name)
 	int fd;
 	int size;
 
-	/* Open the shm block */
-	if ((fd = shm_open(name, O_RDWR, 0)) < 0)
+	/* Open the file */
+	if ((fd = open_file(name, O_RDWR, 0)) < 0)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	/* Seek to the meta data location */
@@ -66,8 +66,8 @@ static PyObject *do_delete(const char *name)
 		return NULL;
 	}
 
-	/* Unlink the shm block */
-	if (shm_unlink(name) < 0)
+	/* Unlink the file */
+	if (unlink_file(name) < 0)
 		return PyErr_SetFromErrnoWithFilename(PyExc_OSError, name);
 
 	Py_RETURN_NONE;
