@@ -23,15 +23,15 @@ import numpy
 
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, 'README.md')) as f:
-    long_description = f.read()
+def read(fname):
+    return open(path.join(here, fname)).read()
 
 setup(name    = 'SharedArray',
-      version = '0.5',
+      version = '1.0',
 
       # Description
       description      = 'Share numpy arrays between processes',
-      long_description = long_description,
+      long_description = read('README.md'),
 
       # Contact
       author       = 'Mathieu Mirmont',
@@ -44,7 +44,7 @@ setup(name    = 'SharedArray',
       # Extras for pip
       keywords  = 'numpy array shared memory shm',
       classifiers  = [
-          'Development Status :: 3 - Alpha',
+          'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Developers',
           'Intended Audience :: Science/Research',
           'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
