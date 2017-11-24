@@ -16,15 +16,34 @@
 # You should have received a copy of the GNU General Public License
 # along with SharedArray.  If not, see <http://www.gnu.org/licenses/>.
 
-from distutils.core import setup, Extension
+from setuptools import setup
+from setuptools.extension import Extension
+from setuptools.command.build_ext import build_ext as _build_ext
+
 from glob import glob
 from os import path
-import numpy
 
 here = path.abspath(path.dirname(__file__))
 
 def read(fname):
     return open(path.join(here, fname)).read()
+
+extensions = [Extension('SharedArray', 
+                        glob(path.join(here, 'src', '*.c')),
+                        libraries = [ 'rt' ])]
+
+class build_ext(_build_ext):
+    """ build_ext command for use when numpy headers are needed. """
+    def run(self):
+
+        # Import numpy here, only when headers are needed.
+        import numpy
+
+        # Add numpy headers to include_dirs.
+        self.include_dirs.append(numpy.get_include())
+
+        # Call original build_ext command
+        _build_ext.run(self)
 
 setup(name    = 'SharedArray',
       version = '1.0',
@@ -53,11 +72,10 @@ setup(name    = 'SharedArray',
           'Programming Language :: C',
           'Topic :: Scientific/Engineering'
       ],
+      
+      install_requires=['numpy'],
+      setup_requires=['numpy'],
+      cmdclass={'build_ext':build_ext},
 
       # Compilation
-      ext_modules  = [
-          Extension('SharedArray',
-                    glob(path.join(here, 'src', '*.c')),
-                    libraries = [ 'rt' ],
-                    include_dirs=[numpy.get_include()])
-      ])
+      ext_modules  = extensions)
